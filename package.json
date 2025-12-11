@@ -1,0 +1,33 @@
+{
+  "name": "flashcards",
+  "version": "1.0.0",
+  "description": "API RESTful de gestion de flashcards pour réviser",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LouMek/Flashcards.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LouMek/Flashcards/issues"
+  },
+  "homepage": "https://github.com/LouMek/Flashcards#readme",
+  "dependencies": {
+    "@libsql/client": "^0.15.15",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.45.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "node": "^20.19.6",
+    "nodemon": "^3.1.11",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.8"
+  }
+}
