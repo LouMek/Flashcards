@@ -1,0 +1,12 @@
+import { z } from 'zod';
+
+export const createCollectionSchema = z.object({
+    title: z.string().min(1, "Title is required").max(50, "Title must be at most 50 characters"),
+    description: z.string().max(255, "Description must be at most 255 characters"),
+    isPublic: z.boolean(),
+    createdBy: z.uuid()
+});
+
+export const collectionIdScema = z.object({
+    id: z.uuid()
+});
