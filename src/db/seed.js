@@ -1,0 +1,43 @@
+import { db } from "./database.js";
+import { usersTable, collectionsTable, flashcardsTable, revisionsTable } from "./schema.js";
+import { hashSync } from "bcrypt";
+
+
+async function seed() {
+    try {
+        console.log('Seeding database...');
+
+        await db.delete(usersTable);
+        await db.delete(collectionsTable);
+        await db.delete(flashcardsTable);
+        await db.delete(revisionsTable);    
+
+
+        const seedUsers = [
+            {
+                email: 'MonAdresse@flashcard.fr',
+                firstName: 'Lou',
+                lastName: 'Meka',
+                password: await hashSync('password123', 10),
+                role: 'ADMIN'
+            },
+            {
+                email: 'user@example.com',
+                firstName: 'John',
+                lastName: 'Doe',
+                password: await hashSync('pass', 10),
+                role: 'USER'
+            }
+        ];  
+
+        const createdUsers = await db.insert(usersTable).values(seedUsers).returning();
+
+        console.log('Database seeded successfully.');
+
+    } catch (error) {
+        console.error('Error seeding database:', error);
+    }
+}
+
+
+seed();

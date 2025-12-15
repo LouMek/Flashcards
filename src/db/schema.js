@@ -1,5 +1,6 @@
 import { integer } from 'drizzle-orm/gel-core';
 import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { randomUUID } from 'crypto';
 
 
 export const usersTable = sqliteTable('users', {
