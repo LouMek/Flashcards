@@ -27,6 +27,20 @@ async function seed() {
                 lastName: 'Doe',
                 password: await hashSync('pass', 10),
                 role: 'USER'
+            },            
+            {
+                email: 'test@example.com',
+                firstName: 'Test',
+                lastName: 'Test',
+                password: await hashSync('test', 10),
+                role: 'USER'
+            },            
+            {
+                email: 'coucou@example.com',
+                firstName: 'cou',
+                lastName: 'cou',
+                password: await hashSync('coucou', 10),
+                role: 'USER'
             }
         ];  
 
