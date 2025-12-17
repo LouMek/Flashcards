@@ -7,14 +7,16 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/server.js",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "node ./src/db/seed.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LouMek/Flashcards.git"
   },
-  "author": "",
+  "author": "Baptiste Aubignat et Louisa Mekhelef",
   "license": "ISC",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/LouMek/Flashcards/issues"
   },
