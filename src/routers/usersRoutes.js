@@ -1,7 +1,5 @@
 import { Router } from 'express';
 import { getAllUsers, getUser, deleteUser } from '../controllers/usersController.js';
-// import { validateParams } from '../middlewares/validateParams.js';
-// import { userIdSchema } from '../models/user.js';
 import { authenticateToken } from '../middleware/authenticateToken.js';
 import { isAdministrator } from '../middleware/isAdministrator.js';
 

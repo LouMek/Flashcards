@@ -1,6 +1,6 @@
-import { db } from "./database.js";
 import { usersTable, collectionsTable, flashcardsTable, revisionsTable } from "./schema.js";
 import { hashSync } from "bcrypt";
+import { db } from "./database.js";
 
 
 async function seed() {
@@ -18,28 +18,28 @@ async function seed() {
                 email: 'MonAdresse@flashcard.fr',
                 firstName: 'Lou',
                 lastName: 'Meka',
-                password: await hashSync('password123', 10),
+                password: await hashSync('password123', 12),
                 role: 'ADMIN'
             },
             {
                 email: 'user@example.com',
                 firstName: 'John',
                 lastName: 'Doe',
-                password: await hashSync('pass', 10),
+                password: await hashSync('pass', 12),
                 role: 'USER'
             },            
             {
                 email: 'test@example.com',
                 firstName: 'Test',
                 lastName: 'Test',
-                password: await hashSync('test', 10),
+                password: await hashSync('test', 12),
                 role: 'USER'
             },            
             {
                 email: 'coucou@example.com',
                 firstName: 'cou',
                 lastName: 'cou',
-                password: await hashSync('coucou', 10),
+                password: await hashSync('coucou', 12),
                 role: 'USER'
             }
         ];  

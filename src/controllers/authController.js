@@ -1,10 +1,9 @@
 import {db} from '../db/database.js';
 import { usersTable } from '../db/schema.js';
 import { hash, compare} from 'bcrypt';
+import { eq } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
-import { eq } from 'drizzle-orm';
-
 /**
  * 
  * @param {request} req 

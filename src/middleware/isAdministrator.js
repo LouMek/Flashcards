@@ -11,7 +11,7 @@ export const isAdministrator = (req, res, next) => {
     try {
 
         if(req.role.userRole !== 'ADMIN') {
-            return res.status(403).json({ message: 'Access denied. Administrator role required.' });
+            return res.status(401).json({ message: 'Access denied. Administrator role required.' });
     }
 
     next();
