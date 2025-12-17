@@ -21,7 +21,7 @@ export const createCollection = async (req, res) => {
         const[newCollection] = await db.insert(collectionsTable).values({
             title,
             description,
-            createdBy: req.user.id
+            createdBy: req.user.userId
         }).returning();
 
         res.status(201).send({
@@ -80,7 +80,7 @@ export const getOneCollection = async (req, res) => {
 
         const { createdBy, isPublic } = created;
 
-        if(!isPublic) {
+        if(isPublic == 0) {
             if(createdBy != req.user.userId) {
                 return res.status(403).json({
                     error: "Wrong ID"
@@ -95,6 +95,11 @@ export const getOneCollection = async (req, res) => {
                 error: "Collection not found"
             });
         }
+
+        res.status(200).json({
+            message: `Collection ${id}`,
+            data: collection
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({
