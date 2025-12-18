@@ -9,7 +9,8 @@ export const usersTable = sqliteTable('users', {
     firstName: text('first_name', {length: 50}).notNull(),
     lastName: text('last_name', {length: 50}).notNull(),
     password: text({length: 255}).notNull(),
-    role: text().notNull().default('USER')
+    role: text().notNull().default('USER'),
+    createdAt: integer('create_at', {mode: 'timeStamp'}).notNull().$defaultFn(() => new Date()),
 });
 
 
@@ -28,7 +29,8 @@ export const flashcardsTable = sqliteTable('flashcards', {
     backText: text('back_text', {length: 50}).notNull(), 
     frontURL: text('front_url', {length: 255}),
     backURL: text('back_url', {length: 255}),
-    collectionId: text('collection_id').references(() => collectionsTable.id).notNull()
+    collectionId: text('collection_id').references(() => collectionsTable.id).notNull(),
+    createdAt: integer('create_at', {mode: 'timeStamp'}).notNull().$defaultFn(() => new Date()),
 });
 
 

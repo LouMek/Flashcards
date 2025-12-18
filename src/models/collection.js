@@ -7,6 +7,6 @@ export const createCollectionSchema = z.object({
     createdBy: z.uuid()
 });
 
-export const collectionIdScema = z.object({
-    id: z.uuid()
+export const collectionIdSchema = z.object({
+    collectionId: z.uuid()
 });

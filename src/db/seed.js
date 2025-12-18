@@ -1,6 +1,7 @@
 import { usersTable, collectionsTable, flashcardsTable, revisionsTable } from "./schema.js";
 import { hashSync } from "bcrypt";
 import { db } from "./database.js";
+import { create } from "node:domain";
 
 
 async function seed() {
@@ -45,6 +46,49 @@ async function seed() {
         ];  
 
         const createdUsers = await db.insert(usersTable).values(seedUsers).returning();
+
+        const seedCollections = [
+            {
+                title: "Ceci est un titre",
+                description: "Ceci est une description",
+                isPublic: true,
+                createdBy: createdUsers[0].id
+            }
+        ]
+
+        const createdCollections = await db.insert(collectionsTable).values(seedCollections).returning();
+
+        const seedFlashcards = [
+            {
+                frontText: "Ceci est un frontText1",
+                backText: "Ceci est un backText1",
+                frontURL:  "Ceci est un frontText1",
+                backURL:  "Ceci est un backText1",
+                collectionId: createdCollections[0].id
+            },
+            {
+                frontText: "Ceci est un frontText1",
+                backText: "Ceci est un backText1",
+                frontURL:  "Ceci est un frontText1",
+                backURL:  "Ceci est un backText1",
+                collectionId: createdCollections[0].id
+            },
+            {
+                frontText: "Ceci est un frontText3",
+                backText: "Ceci est un backText3",
+                collectionId: createdCollections[0].id
+            },            
+            {
+                frontText: "Ceci est un frontText4",
+                backText: "Ceci est un backText4",
+                frontURL:  "Ceci est un frontText4",
+                backURL:  "Ceci est un backText4",
+                collectionId: createdCollections[0].id
+            },
+        ]
+
+        const createdFlashcards = await db.insert(flashcardsTable).values(seedFlashcards).returning();
+
 
         console.log('Database seeded successfully.');
 
