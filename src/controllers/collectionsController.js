@@ -2,12 +2,20 @@ import { db } from '../db/database.js';
 import { collectionsTable, usersTable } from '../db/schema.js';
 import { eq, like } from 'drizzle-orm';
 
+/**
+ * Cette fonction renvoie les collections appartenant à l'utilisateur authentifié.
+ * Si l'on précise le titre dans l'url, cela renvoie la collection correspondante si celle-ci est publique.
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
 export const getCollections = async (req, res) => {
     try {
         const { title } = req.query;
 
         let query = db.select().from(collectionsTable)
 
+        // Vérifie si un titre est passé dans l'url de la requête. Si il n'y en a pas, cela renvoie les collections de l'utilisateur authentifié.
         if(!title) {
             const collections = await db.select().from(collectionsTable).where(eq(collectionsTable.createdBy, req.user.userId));
             return res.status(200).json(collections);
@@ -17,6 +25,7 @@ export const getCollections = async (req, res) => {
 
         const [collectionByTitle] = await query;
 
+        // Vérifie si la collection spécifiée par le titre est publique.
         if(collectionByTitle.isPublic == 0) {
             return res.status(403).json({
                 error: "This collection is private"
@@ -35,6 +44,11 @@ export const getCollections = async (req, res) => {
     }
 }
 
+/**
+ * Cette fonction permet à l'utilisateur authentifié de créer une collection.
+ * @param {*} req 
+ * @param {*} res 
+ */
 export const createCollection = async (req, res) => {
     const { title, description, isPublic } = req.body;
 
@@ -58,6 +72,12 @@ export const createCollection = async (req, res) => {
     }
 }
 
+/**
+ * Cette fonction permet à l'utilisateur authentifié de supprimer une de ses collections.
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
 export const deleteCollection = async (req, res) => {
     const { id } = req.params;
 
@@ -91,6 +111,12 @@ export const deleteCollection = async (req, res) => {
     }
 }
 
+/**
+ * Cette fonction permet de récupérer une collection par son ID.
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
 export const getOneCollection = async (req, res) => {
     const { id } = req.params;
 
@@ -130,6 +156,12 @@ export const getOneCollection = async (req, res) => {
     }
 }
 
+/**
+ * Cette fonction permet à l'utilisateur authentifié de modifier une de ses collections (Titre, description, visibilité).
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
 export const modifyCollection = async (req, res) => {
     const { id } = req.params;
     const { title, description, isPublic } = req.body;
