@@ -107,3 +107,41 @@ export const getOneCollection = async (req, res) => {
         });
     }
 }
+
+export const modifyCollection = async (req, res) => {
+    const { id } = req.params;
+    const { title, description, isPublic } = req.body;
+
+    try {
+        const [created] = await db.select({ createdBy: collectionsTable.createdBy }).from(collectionsTable).where(eq(collectionsTable.id, id));
+        const { createdBy } = created;
+
+        if(createdBy != req.user.userId) {
+            return res.status(403).json({
+                error: "Wrong ID"
+            });
+        }
+
+        const [modifiedCollection] = await db.update(collectionsTable).set({
+            title: title,
+            description: description,
+            isPublic: isPublic
+        }).where(eq(collectionsTable.id, id)).returning();
+
+        if(!modifiedCollection) {
+            return res.status(404).json({
+                error: "Collection not found"
+            });
+        }
+
+        res.status(200).json({
+            message: `Collection ${id} modified`,
+            data: modifiedCollection
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: "Failed to modify collection"
+        });
+    }
+}
