@@ -1,26 +1,48 @@
 import { db } from '../db/database.js';
 import { collectionsTable, usersTable } from '../db/schema.js';
-import { eq } from 'drizzle-orm';
+import { eq, like } from 'drizzle-orm';
 
-export const getAllCollections = async (req, res) => {
+export const getCollections = async (req, res) => {
     try {
-        const collections = await db.select().from(collectionsTable);
-        res.status(200).json(collections);
+        const { title } = req.query;
+
+        let query = db.select().from(collectionsTable)
+
+        if(!title) {
+            const collections = await db.select().from(collectionsTable).where(eq(collectionsTable.createdBy, req.user.userId));
+            return res.status(200).json(collections);
+        }
+
+        query = query.where(like(collectionsTable.title, `%${title}%`));
+
+        const [collectionByTitle] = await query;
+
+        if(collectionByTitle.isPublic == 0) {
+            return res.status(403).json({
+                error: "This collection is private"
+            });
+        }
+
+        res.status(200).json({
+            message: `Collection ${title}`,
+            data: collectionByTitle
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({
-            error: 'Failed to fetch collections'
+            error: "Failed to fetch collection"
         });
     }
 }
 
 export const createCollection = async (req, res) => {
-    const { title, description } = req.body;
+    const { title, description, isPublic } = req.body;
 
     try {
         const[newCollection] = await db.insert(collectionsTable).values({
             title,
             description,
+            isPublic,
             createdBy: req.user.userId
         }).returning();
 
