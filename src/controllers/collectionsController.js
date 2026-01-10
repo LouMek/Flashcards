@@ -15,7 +15,7 @@ export const getCollections = async (req, res) => {
         const { title } = req.query;
 
         // Préparation de la requête sur la table collectionsTable
-        let query = db.select().from(collectionsTable)
+        let query = db.select().from(collectionsTable);
 
         // Vérifie si un titre est passé dans l'url de la requête.
         // Si il n'y en a pas, cela renvoie les collections de l'utilisateur authentifié.
@@ -29,6 +29,12 @@ export const getCollections = async (req, res) => {
 
         // Récupération de la collection voulue
         const [collectionByTitle] = await query;
+
+        if(!collectionByTitle) {
+            return res.status(404).json({
+                error: "Collection not found"
+            });
+        }
 
         // Vérifie si la collection spécifiée par le titre est publique.
         // Sinon renvoie un code d'erreur
@@ -69,6 +75,12 @@ export const createCollection = async (req, res) => {
             isPublic,
             createdBy: req.user.userId // Obtenu grâce au token
         }).returning();
+
+        if(!newCollection) {
+            return res.status(404).json({
+                error: "Collection not found"
+            });
+        }
 
         // On renvoie un message avec la nouvelle collection créée
         res.status(201).send({
