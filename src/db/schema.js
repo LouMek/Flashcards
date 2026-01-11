@@ -1,6 +1,6 @@
 import { integer } from 'drizzle-orm/gel-core';
 import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
-
+import { randomUUID } from 'crypto';
 
 export const usersTable = sqliteTable('users', {
     id: text().primaryKey().$default(() => randomUUID()),
@@ -8,18 +8,17 @@ export const usersTable = sqliteTable('users', {
     firstName: text('first_name', {length: 50}).notNull(),
     lastName: text('last_name', {length: 50}).notNull(),
     password: text({length: 255}).notNull(),
-    role: text().notNull().default('USER')
+    role: text().notNull().default('USER'),
+    createdAt: integer('create_at', {mode: 'timeStamp'}).notNull().$defaultFn(() => new Date())
 });
-
 
 export const collectionsTable = sqliteTable('collections', {
     id: text().primaryKey().$default(() => randomUUID()),
-    title: text({length : 50}).notNull(),
+    title: text({length: 50}).notNull(),
     description: text({length: 255}),
     isPublic: integer('is_public', {mode: 'boolean'}).notNull().default(false),
-    createdBy: text('created_by').references(() => usersTable.id).notNull()
+    createdBy: text('created_by').references(() => usersTable.id, {onDelete: 'cascade'}).notNull()
 });
-
 
 export const flashcardsTable = sqliteTable('flashcards', {
     id: text().primaryKey().$default(() => randomUUID()),
@@ -27,16 +26,15 @@ export const flashcardsTable = sqliteTable('flashcards', {
     backText: text('back_text', {length: 50}).notNull(), 
     frontURL: text('front_url', {length: 255}),
     backURL: text('back_url', {length: 255}),
-    collectionId: text('collection_id').references(() => collectionsTable.id).notNull()
+    collectionId: text('collection_id').references(() => collectionsTable.id, { onDelete: 'cascade'}).notNull(),
+    createdAt: integer('create_at', {mode: 'timeStamp'}).notNull().$defaultFn(() => new Date())
 });
-
 
 export const revisionsTable = sqliteTable('revisions', {
     id: text().primaryKey().$default(() => randomUUID()),
     level: integer().notNull().default(1),
     lastRevision: integer('last_revision', {mode: 'timeStamp'}).notNull().$defaultFn(() => new Date()),
+    nextRevision: integer('next_revision', {mode: 'timeStamp'}).notNull(),
     flashcardId: text('flashcard_id').references(() => flashcardsTable.id).notNull(),
-    userId: text('user_id').references(() => usersTable.id).notNull()
+    userId: text('user_id').references(() => usersTable.id, {onDelete: 'cascade'}).notNull()
 });
-
-
