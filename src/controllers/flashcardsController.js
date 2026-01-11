@@ -27,7 +27,7 @@ export const createFlashcard = async (req, res) => {
         }
 
         if (collection.createdBy !=  req.user.userId) {
-            return res.status(403).json({ error: 'Invalid permission: you need to be the owner of the collection' })
+            return res.status(403).json({ error: 'Invalid permission: you need to be the owner of the collection' });
         }
 
         const [newFlashcard] = await db.insert(flashcardsTable).values({
@@ -45,7 +45,7 @@ export const createFlashcard = async (req, res) => {
         console.log(error);
         res.status(500).json({
             error: 'Failed to create flashcards'
-        })
+        });
     }
 }
 
@@ -75,7 +75,7 @@ export const deleteFlashcard = async (req, res) => {
         }
 
         if (deleteFlashcard.collections.createdBy != req.user.userId) {
-            return res.status(403).json({ error: 'Invalid permission: you need to be the owner of the flashcard' })
+            return res.status(403).json({ error: 'Invalid permission: you need to be the owner of the flashcard' });
         }
 
         await db.delete(flashcardsTable).where(eq(flashcardsTable.id, deleteFlashcard.flashcards.id));
@@ -122,14 +122,14 @@ export const getFlashcardsByCollection = async (req, res) => {
         }
 
         if(!collection.isPublic && collection.createdBy != req.user.userId && req.role.userRole != 'ADMIN') {
-            return  res.status(403).json({ error: 'Invalid permission: this collection is private' })
+            return  res.status(403).json({ error: 'Invalid permission: this collection is private' });
         }
 
         res.status(200).json(flashcards) 
     } catch (error) {
         res.status(500).json({
             error: 'Failed to fetch flashcards'
-        })
+        });
     }
 }
 
@@ -158,17 +158,17 @@ export const getFlashcard = async (req, res) => {
         const [collection] = (await
             db.select().from(collectionsTable)
             .where(eq(collectionsTable.id, flashcard.collectionId))
-        )
+        );
 
         if(!collection.isPublic && collection.createdBy != req.user.userId && req.role.userRole != 'ADMIN') {
-            return  res.status(403).json({ error: 'Invalid permission: this flashcard is in a private collection' })
+            return  res.status(403).json({ error: 'Invalid permission: this flashcard is in a private collection' });
         }
 
         res.status(200).json(flashcard) 
     } catch (error) {
         res.status(500).json({
             error: 'Failed to fetch flashcard'
-        })
+        });
     }
 }
 
@@ -199,7 +199,7 @@ export const updateFlashcard = async (req, res) => {
         }
 
         if (flashcard.collections.createdBy != req.user.userId) {
-            return res.status(403).json({ error: 'Invalid permission: you need to be the owner of the flashcard' })
+            return res.status(403).json({ error: 'Invalid permission: you need to be the owner of the flashcard' });
         }
 
         const [updateFlashcard] = await db.update(flashcardsTable).set({
@@ -211,7 +211,7 @@ export const updateFlashcard = async (req, res) => {
 
         if(!updateFlashcard) {
             return res.status(404).json({
-                error: "Flashcard not found"
+                error: 'Flashcard not found'
             });
         }
 
@@ -222,7 +222,7 @@ export const updateFlashcard = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({
-            error: "Failed to modify flashcard"
+            error: 'Failed to modify flashcard'
         });
     }
 }

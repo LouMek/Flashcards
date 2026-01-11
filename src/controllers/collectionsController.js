@@ -1,5 +1,5 @@
 import { db } from '../db/database.js';
-import { collectionsTable, usersTable } from '../db/schema.js';
+import { collectionsTable } from '../db/schema.js';
 import { eq, like } from 'drizzle-orm';
 
 /**
@@ -17,8 +17,7 @@ export const getCollections = async (req, res) => {
         // Préparation de la requête sur la table collectionsTable
         let query = db.select().from(collectionsTable);
 
-        // Vérifie si un titre est passé dans l'url de la requête.
-        // Si il n'y en a pas, cela renvoie les collections de l'utilisateur authentifié.
+        // Vérifie si un titre est passé dans l'url de la requête, s'il n'y en a pas, cela renvoie les collections de l'utilisateur authentifié.
         if(!title) {
             const collections = await db.select().from(collectionsTable).where(eq(collectionsTable.createdBy, req.user.userId));
             return res.status(200).json(collections);
@@ -33,15 +32,14 @@ export const getCollections = async (req, res) => {
         // Renvoie une erreur si aucune collection n'a été trouvée
         if(!collectionByTitle) {
             return res.status(404).json({
-                error: "Collection not found"
+                error: 'Collection not found'
             });
         }
 
-        // Vérifie si la collection spécifiée par le titre est publique.
-        // Sinon renvoie un code d'erreur
-        if(collectionByTitle.isPublic == 0) {
+        // Vérifie si la collection spécifiée par le titre est publique, ou que l'utilisateur est autorisé à consulter. Sinon renvoie un code d'erreur
+        if(!collectionByTitle.isPublic && collectionByTitle.createdBy != req.user.userId && req.role.userRole != 'ADMIN') {
             return res.status(403).json({
-                error: "This collection is private"
+                error: 'Invalid permission: this collection is private'
             });
         }
 
@@ -54,7 +52,7 @@ export const getCollections = async (req, res) => {
         // Si la requête HTTP ne s'est pas bien passée, renvoie un code d'erreur
         console.error(error);
         res.status(500).json({
-            error: "Failed to fetch collection"
+            error: 'Failed to fetch collection'
         });
     }
 }
@@ -80,20 +78,20 @@ export const createCollection = async (req, res) => {
         // Renvoie une erreur si aucune collection n'a pu être créée
         if(!newCollection) {
             return res.status(404).json({
-                error: "Collection not found"
+                error: 'Collection not found'
             });
         }
 
         // On renvoie un message avec la nouvelle collection créée
         res.status(201).send({
-            message: "Collection created",
+            message: 'Collection created',
             data: newCollection
         });
     } catch (error) {
         // Si la requête HTTP ne s'est pas bien passée, renvoie un code d'erreur
         console.error(error);
         res.status(500).json({
-            error: "Failed to create collection"
+            error: 'Failed to create collection'
         });
     }
 }
@@ -106,40 +104,40 @@ export const createCollection = async (req, res) => {
  */
 export const deleteCollection = async (req, res) => {
     // On récupère l'ID passé en paramètres de la reqûete HTTP
-    const { id } = req.params;
+    const { collectionId } = req.params;
 
     try {
         // On exécute une requête select afin de récupérer l'ID du créateur de la collection que l'on veut supprimer
-        const [created] = await db.select({ createdBy: collectionsTable.createdBy }).from(collectionsTable).where(eq(collectionsTable.id, id));
+        const [created] = await db.select({ createdBy: collectionsTable.createdBy }).from(collectionsTable).where(eq(collectionsTable.id, collectionId));
+
+        // Si l'ID passé en paramètres ne correspond à aucune collection, on renvoie une erreur
+        if (!created) {
+            return res.status(404).json({ error: 'Collection not found' });
+        }
+
         const { createdBy } = created;
 
-        // Si la collection spécifiée n'appartient pas à l'utlisateur authentifié, on renvoie une erreur
-        if(createdBy != req.user.userId) {
+
+        // Si la collection spécifiée n'appartient pas à l'utlisateur authentifié ou n'est pas admin, on renvoie une erreur
+        if(createdBy != req.user.userId && req.role.userRole != 'ADMIN') {
             return res.status(403).json({
-                error: "Wrong ID"
+                error: 'Invalid permission: you need to be the owner of the collection'
             });
         }
 
         // Requête permettant de supprimer la collection si l'ID en paramètres correspond
-        const [deletedCollection] = await db.delete(collectionsTable).where(eq(collectionsTable.id, id)).returning();
-
-        // Si l'ID passé en paramètres ne correspond à aucune collection, on renvoie une erreur
-        if(!deletedCollection) {
-            return res.status(404).json({
-                error: "Collection not found"
-            });
-        }
+        const [deletedCollection] = await db.delete(collectionsTable).where(eq(collectionsTable.id, collectionId)).returning();
 
         // On renvoie un message avec la collection que l'on vient de supprimer
         res.status(200).json({
-            message: `Collection ${id} deleted`,
+            message: `Collection ${collectionId} deleted`,
             data: deletedCollection
         });
     } catch (error) {
         // Si la requête HTTP ne s'est pas bien passée, renvoie un code d'erreur
         console.error(error);
         res.status(500).json({
-            error: "Failed to delete collection"
+            error: 'Failed to delete collection'
         });
     }
 }
@@ -152,47 +150,42 @@ export const deleteCollection = async (req, res) => {
  */
 export const getOneCollection = async (req, res) => {
     // On récupère l'ID passé en paramètres de la reqûete HTTP
-    const { id } = req.params;
+    const { collectionId } = req.params;
 
     try {
         // On vérifie qui est le créateur de la collection et si celle-ci est publique ou non
         const [created] = await db.select({
             createdBy: collectionsTable.createdBy,
             isPublic: collectionsTable.isPublic
-        }).from(collectionsTable).where(eq(collectionsTable.id, id));
+        }).from(collectionsTable).where(eq(collectionsTable.id, collectionId));
+
+        // Si l'ID passé en paramètres ne correspond à aucune collection, on renvoie une erreur
+        if (!created) {
+            return res.status(404).json({ error: 'Collection not found' });
+        }
 
         const { createdBy, isPublic } = created;
 
-        // Si la collection est privée, on vérifie que l'utilisateur authentifié en soit bien le créateur,
-        // sinon on renvoie une erreur
-        if(isPublic == 0) {
-            if(createdBy != req.user.userId) {
-                return res.status(403).json({
-                    error: "Wrong ID"
-                });
-            }
-        }
-
-        // Récupération de la collection grâce à son ID
-        const [collection] = await db.select().from(collectionsTable).where(eq(collectionsTable.id, id));
-
-        // Si l'ID passé en paramètres ne correspond à aucune collection, on renvoie une erreur
-        if(!collection) {
-            return res.status(404).json({
-                error: "Collection not found"
+        // Vérifie si la collection spécifiée par le titre est publique, ou que l'utilisateur est autorisé à consulter. Sinon renvoie un code d'erreur
+        if(!isPublic && createdBy != req.user.userId && req.role.userRole != 'ADMIN') {
+            return res.status(403).json({
+                error: 'Invalid permission: this collection is private'
             });
         }
 
+        // Récupération de la collection grâce à son ID
+        const [collection] = await db.select().from(collectionsTable).where(eq(collectionsTable.id, collectionId));
+
         // On renvoie un message contenant la collection voulue
         res.status(200).json({
-            message: `Collection ${id}`,
+            message: `Collection ${collectionId}`,
             data: collection
         });
     } catch (error) {
         // Si la requête HTTP ne s'est pas bien passée, renvoie un code d'erreur
         console.error(error);
         res.status(500).json({
-            error: "Failed to fetch collection"
+            error: 'Failed to fetch collection'
         });
     }
 }
@@ -205,19 +198,26 @@ export const getOneCollection = async (req, res) => {
  */
 export const modifyCollection = async (req, res) => {
     // On récupère l'ID passé en paramètre de la requête HTTP ainsi que les valeurs à modifier dans le body de la requête HTTP
-    const { id } = req.params;
+    const { collectionId } = req.params;
     const { title, description, isPublic } = req.body;
 
     try {
         // On récupère l'ID du créateur de la collection
-        const [created] = await db.select({ createdBy: collectionsTable.createdBy }).from(collectionsTable).where(eq(collectionsTable.id, id));
+        const [created] = await db.select({ createdBy: collectionsTable.createdBy }).from(collectionsTable).where(eq(collectionsTable.id, collectionId));
+        
+        // Renvoie une erreur si l'ID passé en paramètres de la requête HTTP ne correspond à aucune collection
+        if (!created) {
+            return res.status(404).json({ error: 'Collection not found' });
+        }
+
         const { createdBy } = created;
+
 
         // On vérifie que l'utilisateur authentifié soit bien le créateur de la collection spécifiée,
         // sinon on renvoie une erreur
         if(createdBy != req.user.userId) {
             return res.status(403).json({
-                error: "Wrong ID"
+                error: 'Invalid permission: you need to be the owner of the collection'
             });
         }
 
@@ -226,25 +226,18 @@ export const modifyCollection = async (req, res) => {
             title: title,
             description: description,
             isPublic: isPublic
-        }).where(eq(collectionsTable.id, id)).returning();
-
-        // Renvoie une erreur si l'ID passé en paramètres de la requête HTTP ne correspond à aucune collection
-        if(!modifiedCollection) {
-            return res.status(404).json({
-                error: "Collection not found"
-            });
-        }
+        }).where(eq(collectionsTable.id, collectionId)).returning();
 
         // Renvoie un message contenant la colelction modifiée
         res.status(200).json({
-            message: `Collection ${id} modified`,
+            message: `Collection ${collectionId} modified`,
             data: modifiedCollection
         });
     } catch (error) {
         // Si la requête HTTP ne s'est pas bien passée, renvoie un code d'erreur
         console.error(error);
         res.status(500).json({
-            error: "Failed to modify collection"
+            error: 'Failed to modify collection'
         });
     }
 }

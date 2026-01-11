@@ -65,13 +65,13 @@ export const login = async (req, res) => {
 
 
         if(!user){
-            return res.status(401).json({error: "Invalid email or password"});
+            return res.status(401).json({error: 'Invalid email or password'});
         };
 
         const isValidPassword = await compare(password, user.password);
 
         if(!isValidPassword){
-            return res.status(401).json({error: "Invalid email or password"});
+            return res.status(401).json({error: 'Invalid email or password'});
         };
 
         const token = jwt.sign({userId: user.id, role: user.role}, process.env.JWT_SECRET, {expiresIn: '24h'});

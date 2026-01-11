@@ -40,7 +40,7 @@ Aucun
 {
     "title": "Titre de la collection",
     "description": "Description de la collection",
-    "isPublic": 1
+    "isPublic": true 
 }
 ```
 
@@ -100,6 +100,6 @@ Aucun
 {
     "title": "Nouveau titre de la collection",
     "description": "Nouvelle description de la collection",
-    "isPublic": 0
+    "isPublic": false
 }
 ```

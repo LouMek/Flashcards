@@ -1,4 +1,4 @@
-import { request } from "express";
+import { request } from 'express';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 
@@ -11,10 +11,10 @@ import 'dotenv/config';
 export const authenticateToken = (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(" ")[1];  
+        const token = authHeader && authHeader.split(' ')[1];  
         
         if(!token) {
-            return res.status(401).json({error: "Token is required"});
+            return res.status(401).json({error: 'Token is required'});
         }
 
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
