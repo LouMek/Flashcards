@@ -108,19 +108,19 @@ export const createOrUpdateRevision = async (req, res) => {
                     //On modifie la date de la prochaine révision en fonction du level
                     nextRevision: now.setDate(now.getDate() + days[level ? level : revision.level]) 
                 })
-                .where(eq(revisionsTable.id, revision.id).returning()
+                .where(eq(revisionsTable.id, revision.id)
             );
         }        
 
         res.status(201).json({
-            message: 'Flashcard created',
+            message: 'Revision created',
             flashcard: flashcard,
             revision: revision
         });
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            error: 'Failed to create flashcards'
+            error: 'Failed to create revision'
         });
     }
 }
