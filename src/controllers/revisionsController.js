@@ -1,6 +1,6 @@
 import { db } from '../db/database.js'
 import { flashcardsTable, collectionsTable } from '../db/schema.js';
-import { eq } from 'drizzle-orm';
+import { eq, lte, and } from 'drizzle-orm';
 import { revisionsTable } from '../db/schema.js';
 
 
@@ -23,19 +23,23 @@ export const getRevisionsByCollection = async (req, res) => {
             .where(eq(collectionsTable.id, collectionId))
         )
 
-        const flashcards = (await 
-            db.select().from(flashcardsTable)
-            .where(eq(flashcardsTable.collectionId, collection.id))
-            .orderBy('createdAt', 'desc')
-        );
-
-
         if (!collection) {
             return res.status(404).json({ error: 'Collection not found' });
         }
 
         if(!collection.isPublic && collection.createdBy != req.user.userId && req.role.userRole != 'ADMIN') {
             return  res.status(403).json({ error: 'Invalid permission: this collection is private' });
+        }
+
+        const [flashcards] = (await 
+            db.select().from(flashcardsTable)
+            .innerJoin(collectionsTable, eq(flashcardsTable.collectionId, collectionsTable.id))
+            .innerJoin(revisionsTable, eq(flashcardsTable.id, revisionsTable.flashcardId))
+            .where(lte(revisionsTable.nextRevision, new Date().getTime()))
+        );
+
+        if (!flashcards) {
+            return res.status(200).json({ Message: 'Nothing to fetch...' });
         }
 
         res.status(200).json(flashcards) 
