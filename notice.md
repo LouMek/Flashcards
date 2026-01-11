@@ -140,10 +140,55 @@ L'ID de la flashcard que l'on souhaite modifier
 }
 ```
 
+## Route Révision
+Pour la gestion des utilisateurs, il faut être connecté et être administrateur.
+Pour la révision, nous somme parti du principe, que lorsque la personne appelle la route `POST /révisions/:FlashcardId`, cela signifie que la personne a révisée la Flashcard.
+Pour cela, l'utilisateur peut choisir d'utiliser un paramètre de requête, qui est un chiffre situé entre 1 et 5 (géré par Zod).
+Il peut choisir de ne pas en mettre.
 
+Lors de l'appel de cette route, si jamais la révision existe déjà, nous la mettons donc à jour. Si le level est mentionné, alors on met à jour le level ainsi que la date en fonction du choix de l'utilisateur.
+Sinon, nous avons fait le choix de ne rien faire.
+Sinon, si la révision n'existe pas, celle-ci est donc créée, en fonction du level choisi par l'utilisateur, sinon, on le met à 1.
 
+### Créer une révision
+- **Méthode HTTP et chemin** : `POST /révisions/:FlashcardId?level=1`
+- **Authentification** : Authentifié - Si la collection est privée, seul le créateur peut créer une révision, sinon tous les utilisateurs peuvent.
+- **Rôle fonctionnel** : Permet de créer une révision à partir d'une flashcard
+#### Paramètres de requête
+Le level de la révision (facultatif)
+#### Paramètres de route
+L'ID de la flashcard
 
+### Consulter les flashcards à réviser
+- **Méthode HTTP et chemin** : `GET /révisions/:CollectionId`
+- **Authentification** : Authentifié - Si la collection est privée, seul le créateur peut voir les révisions, sinon tous les utilisateurs peuvent.
+- **Rôle fonctionnel** : Permet de voir les révisions d'une flashcard en fonction d'une collection
+#### Paramètres de requête
+Le level de la révision (facultatif)
+#### Paramètres de route
+L'ID de la collection
 
+## Route User
+Pour la gestion des utilisateurs, il faut être connecté et être administrateur.
+
+### Lister tous les utilisateurs
+- **Méthode HTTP et chemin** : `GET /users`
+- **Authentification** : Authentifié + Administrateur
+- **Rôle fonctionnel** : Permet de récupérer la liste des utilisateurs dans l'ordre de la création des compte
+
+### Lister un utilisateur
+- **Méthode HTTP et chemin** : `GET /users/:userId`
+- **Authentification** : Authentifié + Administrateur
+- **Rôle fonctionnel** : Permet de récupérer un utilisateur via son ID
+#### Paramètres de route
+L'ID de l'utilisateur que l'on souhaite regarder
+
+### Supprimer un utilisateur
+- **Méthode HTTP et chemin** : `DELETE /users/:userId`
+- **Authentification** : Authentifié + Administrateur
+- **Rôle fonctionnel** : Permet de supprimer un utilisateur via son ID
+#### Paramètres de route
+L'ID de l'utilisateur que l'on souhaite supprimer
 
 
 
