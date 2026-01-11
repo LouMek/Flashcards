@@ -5,7 +5,6 @@ import { validateBody, validateParams } from '../middleware/validation.js';
 import { createFlashcardSchema, updateFlashcardSchema, flashcardIdSchema } from '../models/flashcard.js';
 import { collectionIdSchema } from '../models/collection.js';
 
-
 const router = Router();
 
 router.use(authenticateToken);

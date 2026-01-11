@@ -1,9 +1,10 @@
-import {db} from '../db/database.js';
+import { db } from '../db/database.js';
 import { usersTable } from '../db/schema.js';
 import { hash, compare} from 'bcrypt';
 import { eq } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
+
 /**
  * 
  * @param {request} req 
@@ -36,18 +37,18 @@ export const register = async (req, res) => {
             token,
         });
     } catch (error) {
-        if(error.cause.code === 'SQLITE_CONSTRAINT_UNIQUE'){ 
+        if(error.cause.code === 'SQLITE_CONSTRAINT_UNIQUE') { 
             return res.status(409).json({
                 error: 'Email already used'
             });
         }
+
         console.log(error);
         res.status(500).json({
             error: 'Register failed'
         });
     };
 }
-
 
 /**
  * 
@@ -63,14 +64,13 @@ export const login = async (req, res) => {
             .from(usersTable)
             .where(eq(usersTable.email, email));
 
-
-        if(!user){
+        if(!user) {
             return res.status(401).json({error: 'Invalid email or password'});
         };
 
         const isValidPassword = await compare(password, user.password);
 
-        if(!isValidPassword){
+        if(!isValidPassword) {
             return res.status(401).json({error: 'Invalid email or password'});
         };
 
@@ -84,7 +84,7 @@ export const login = async (req, res) => {
                 lastName: user.lastName,
                 id: user.id
             },
-            token,
+            token
         });
         
     } catch (error) {

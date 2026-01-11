@@ -16,17 +16,16 @@ export const createFlashcard = async (req, res) => {
     const { collectionId } = req.params;
 
     try {
-
         const [collection] = (await
             db.select().from(collectionsTable)
             .where(eq(collectionsTable.id, collectionId))
-        )
+        );
 
         if (!collection) {
             return res.status(404).json({ error: 'Collection not found' });
         }
 
-        if (collection.createdBy !=  req.user.userId) {
+        if (collection.createdBy != req.user.userId) {
             return res.status(403).json({ error: 'Invalid permission: you need to be the owner of the collection' });
         }
 
@@ -37,6 +36,7 @@ export const createFlashcard = async (req, res) => {
             backURL,
             collectionId
         }).returning();
+
         res.status(201).json({
             message: 'Flashcard created',
             data: newFlashcard
@@ -63,7 +63,6 @@ export const deleteFlashcard = async (req, res) => {
     const { flashcardId } = req.params;
 
     try {
-
         const [deleteFlashcard] = (await 
             db.select().from(flashcardsTable)
             .innerJoin(collectionsTable, eq(flashcardsTable.collectionId, collectionsTable.id))
@@ -85,11 +84,9 @@ export const deleteFlashcard = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             error: 'Failed to delete flashcard'
-        })
+        });
     }
 }
-
-
 
 /**
  * Permet de récupérer toutes les flashcards d'une collection.
@@ -108,14 +105,13 @@ export const getFlashcardsByCollection = async (req, res) => {
         const [collection] = (await
             db.select().from(collectionsTable)
             .where(eq(collectionsTable.id, collectionId))
-        )
+        );
 
         const flashcards = (await 
             db.select().from(flashcardsTable)
             .where(eq(flashcardsTable.collectionId, collection.id))
             .orderBy('createdAt', 'desc')
         );
-
 
         if (!collection) {
             return res.status(404).json({ error: 'Collection not found' });
@@ -125,7 +121,7 @@ export const getFlashcardsByCollection = async (req, res) => {
             return  res.status(403).json({ error: 'Invalid permission: this collection is private' });
         }
 
-        res.status(200).json(flashcards) 
+        res.status(200).json(flashcards);
     } catch (error) {
         res.status(500).json({
             error: 'Failed to fetch flashcards'
@@ -161,18 +157,16 @@ export const getFlashcard = async (req, res) => {
         );
 
         if(!collection.isPublic && collection.createdBy != req.user.userId && req.role.userRole != 'ADMIN') {
-            return  res.status(403).json({ error: 'Invalid permission: this flashcard is in a private collection' });
+            return res.status(403).json({ error: 'Invalid permission: this flashcard is in a private collection' });
         }
 
-        res.status(200).json(flashcard) 
+        res.status(200).json(flashcard);
     } catch (error) {
         res.status(500).json({
             error: 'Failed to fetch flashcard'
         });
     }
 }
-
-
 
 /**
  * Permet de mettre à jour une flashcard.
