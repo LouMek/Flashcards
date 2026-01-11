@@ -107,11 +107,47 @@ async function seed() {
             }
         ];
 
+        const createdFlashcards = await db.insert(flashcardsTable).values(seedFlashcards).returning();
+
         const seedRevisions = [
-            
+            {
+                level: 1,
+                lastRevision: 1768170967,
+                nextRevision: 1768248851,
+                flashcardId: createdFlashcards[0].id,
+                userId: createdUsers[2].id
+            },
+            {
+                level: 2,
+                lastRevision: 1768076051,
+                nextRevision: 1768248851,
+                flashcardId: createdFlashcards[0].id,
+                userId: createdUsers[2].id
+            },
+            {
+                level: 3,
+                lastRevision: 1767989651,
+                nextRevision: 1768335251,
+                flashcardId: createdFlashcards[1].id,
+                userId: createdUsers[2].id
+            },
+            {
+                level: 4,
+                lastRevision: 1767903251,
+                nextRevision: 1768594451,
+                flashcardId: createdFlashcards[1].id,
+                userId: createdUsers[3].id
+            },
+            {
+                level: 5,
+                lastRevision: 1767298451,
+                nextRevision: 1768680851,
+                flashcardId: createdFlashcards[1].id,
+                userId: createdUsers[3].id
+            }
         ];
 
-        const createdFlashcards = await db.insert(flashcardsTable).values(seedFlashcards).returning();
+        const createdRevisions = await db.insert(revisionsTable).values(seedRevisions).returning();
 
         console.log('Database seeded successfully.');
     } catch (error) {
