@@ -37,5 +37,20 @@ export const validateParams = (schema) => {
 
 
 
-
+export const validateQuery = (schema) => {
+    return (req, res, next) => {
+        try{
+            req.validatedQuery = schema.parse(req.query);
+            next();
+        } catch(error) {
+            if(error instanceof ZodError){
+                return res.status(400).send({
+                    error: 'Invalid query parameters',
+                    details: error.issues.map((issue) => issue.message), //map est comme un foreach.
+                });
+            }
+            res.status(500).send({error: 'Internal server error'});
+        }
+    };
+};
 

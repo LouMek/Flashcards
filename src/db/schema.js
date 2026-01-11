@@ -38,6 +38,7 @@ export const revisionsTable = sqliteTable('revisions', {
     id: text().primaryKey().$default(() => randomUUID()),
     level: integer().notNull().default(1),
     lastRevision: integer('last_revision', {mode: 'timeStamp'}).notNull().$defaultFn(() => new Date()),
+    nextRevision: integer('next_revision', {mode: 'timeStamp'}).notNull(),
     flashcardId: text('flashcard_id').references(() => flashcardsTable.id).notNull(),
     userId: text('user_id').references(() => usersTable.id, { onDelete: 'cascade'}).notNull()
 });
