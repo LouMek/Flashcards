@@ -12,7 +12,7 @@ router.use(authenticateToken);
 
 //id de la collection
 router.post('/:collectionId', validateBody(createFlashcardSchema), createFlashcard);
-router.get('/:collectionId', validateParams(collectionIdSchema), getFlashcardsByCollection); //Pour récup toutes les flashcards d'une collection
+router.get('/collection/:collectionId', validateParams(collectionIdSchema), getFlashcardsByCollection); //Pour récup toutes les flashcards d'une collection
 
 router.get('/:flashcardId', validateParams(flashcardIdSchema), getFlashcard);
 router.delete('/:flashcardId', validateParams(flashcardIdSchema), deleteFlashcard);
