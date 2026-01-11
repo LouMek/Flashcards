@@ -30,6 +30,7 @@ export const getCollections = async (req, res) => {
         // Récupération de la collection voulue
         const [collectionByTitle] = await query;
 
+        // Renvoie une erreur si aucune collection n'a été trouvée
         if(!collectionByTitle) {
             return res.status(404).json({
                 error: "Collection not found"
@@ -76,6 +77,7 @@ export const createCollection = async (req, res) => {
             createdBy: req.user.userId // Obtenu grâce au token
         }).returning();
 
+        // Renvoie une erreur si aucune collection n'a pu être créée
         if(!newCollection) {
             return res.status(404).json({
                 error: "Collection not found"
