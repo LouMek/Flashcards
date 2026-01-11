@@ -23,21 +23,21 @@ async function seed() {
                 email: 'user@example.com',
                 firstName: 'John',
                 lastName: 'Doe',
-                password: await hashSync('pass', 12),
+                password: await hashSync('pass1234', 12),
                 role: 'USER'
             },            
             {
                 email: 'test@example.com',
                 firstName: 'Test',
                 lastName: 'Test',
-                password: await hashSync('test', 12),
+                password: await hashSync('test1234', 12),
                 role: 'USER'
             },            
             {
                 email: 'coucou@example.com',
-                firstName: 'cou',
-                lastName: 'cou',
-                password: await hashSync('coucou', 12),
+                firstName: 'Baptiste',
+                lastName: 'Aubignat',
+                password: await hashSync('coucou12', 12),
                 role: 'USER'
             }
         ];  
@@ -46,10 +46,16 @@ async function seed() {
 
         const seedCollections = [
             {
-                title: 'Ceci est un titre',
-                description: 'Ceci est une description',
+                title: 'Base de données',
+                description: 'Ceci est une collections dédiée à la révision sur les base de données',
                 isPublic: true,
-                createdBy: createdUsers[0].id
+                createdBy: createdUsers[1].id
+            },
+            {
+                title: 'Java',
+                description: 'Ceci est une collection dédiée à la révision sur Java',
+                isPublic: false,
+                createdBy: createdUsers[3].id
             }
         ];
 
@@ -57,31 +63,52 @@ async function seed() {
 
         const seedFlashcards = [
             {
-                frontText: 'Ceci est un frontText1',
-                backText: 'Ceci est un backText1',
-                frontURL:  'Ceci est un frontText1',
-                backURL:  'Ceci est un backText1',
+                frontText: 'Que signifie SQL ?',
+                backText: 'Structured Query Language',
+                frontURL: 'https://test.com',
+                backURL: 'https://test.com',
                 collectionId: createdCollections[0].id
             },
             {
-                frontText: 'Ceci est un frontText1',
-                backText: 'Ceci est un backText1',
-                frontURL:  'Ceci est un frontText1',
-                backURL:  'Ceci est un backText1',
+                frontText: 'Comment voir les données d\'une table en SQL ?',
+                backText: 'Requête SELECT',
+                frontURL: 'https://test.com',
+                backURL: 'https://test.com',
                 collectionId: createdCollections[0].id
             },
             {
-                frontText: 'Ceci est un frontText3',
-                backText: 'Ceci est un backText3',
-                collectionId: createdCollections[0].id
+                frontText: 'Java est-il un langage orienté objet ?',
+                backText: 'Oui',
+                collectionId: createdCollections[1].id
             },            
             {
-                frontText: 'Ceci est un frontText4',
-                backText: 'Ceci est un backText4',
-                frontURL:  'Ceci est un frontText4',
-                backURL:  'Ceci est un backText4',
-                collectionId: createdCollections[0].id
+                frontText: 'En quelle année a été créé Java ?',
+                backText: '1995',
+                frontURL: 'https://test.com',
+                backURL: 'https://test.com',
+                collectionId: createdCollections[1].id
             },
+            {
+                frontText: 'Quel IDE open-source est très populaire pour développer en Java ?',
+                backText: 'Eclipse',
+                frontURL: 'https://test.com',
+                backURL: 'https://test.com',
+                collectionId: createdCollections[1].id
+            },
+            {
+                frontText: 'Java est-il encore utilisé aujourd\'hui ?',
+                backText: 'Oui',
+                collectionId: createdCollections[1].id
+            },
+            {
+                frontText: 'Comment appelle-t-on un objet en Java ?',
+                backText: 'Une classe',
+                collectionId: createdCollections[1].id
+            }
+        ];
+
+        const seedRevisions = [
+            
         ];
 
         const createdFlashcards = await db.insert(flashcardsTable).values(seedFlashcards).returning();
