@@ -34,7 +34,7 @@ export const getRevisionsByCollection = async (req, res) => {
             db.select().from(flashcardsTable)
             .innerJoin(collectionsTable, eq(flashcardsTable.collectionId, collectionsTable.id))
             .innerJoin(revisionsTable, eq(flashcardsTable.id, revisionsTable.flashcardId))
-            .where(lte(revisionsTable.nextRevision, new Date().getTime()))
+            .where(and(lte(revisionsTable.nextRevision, new Date().getTime()), eq(collectionsTable.id, collectionId), eq(revisionsTable.userId, req.user.userId)))
         );
 
         if (!flashcards) {
