@@ -140,7 +140,48 @@ L'ID de la flashcard que l'on souhaite modifier
 }
 ```
 
+## Route Révision
+Pour la gestion des utilisateurs, il faut être connecté et être administrateur.
 
+### Créer une révision
+- **Méthode HTTP et chemin** : `POST /révisions/:FlashcardId`
+- **Authentification** : Authentifié - Si la collection est privée, seul le créateur peut créer une révision, sinon tous les utilisateurs peuvent.
+- **Rôle fonctionnel** : Permet de créer une révision à partir d'une flashcard
+#### Paramètres de requête
+Le level de la révision (facultatif)
+#### Paramètres de route
+L'ID de la flashcard
+
+### Consulter les flashcards à réviser
+- **Méthode HTTP et chemin** : `GET /révisions/:CollectionId`
+- **Authentification** : Authentifié - Si la collection est privée, seul le créateur peut voir les révisions, sinon tous les utilisateurs peuvent.
+- **Rôle fonctionnel** : Permet de voir les révisions d'une flashcard en fonction d'une collection
+#### Paramètres de requête
+Le level de la révision (facultatif)
+#### Paramètres de route
+L'ID de la collection
+
+## Route User
+Pour la gestion des utilisateurs, il faut être connecté et être administrateur.
+
+### Lister tous les utilisateurs
+- **Méthode HTTP et chemin** : `GET /users`
+- **Authentification** : Authentifié + Administrateur
+- **Rôle fonctionnel** : Permet de récupérer la liste des utilisateurs dans l'ordre de la création des compte
+
+### Lister un utilisateur
+- **Méthode HTTP et chemin** : `GET /users/:userId`
+- **Authentification** : Authentifié + Administrateur
+- **Rôle fonctionnel** : Permet de récupérer un utilisateur via son ID
+#### Paramètres de route
+L'ID de l'utilisateur que l'on souhaite regarder
+
+### Lister un utilisateur
+- **Méthode HTTP et chemin** : `DELETE /users/:userId`
+- **Authentification** : Authentifié + Administrateur
+- **Rôle fonctionnel** : Permet de supprimer un utilisateur via son ID
+#### Paramètres de route
+L'ID de l'utilisateur que l'on souhaite supprimer
 
 
 
