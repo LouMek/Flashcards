@@ -51,9 +51,8 @@ export const getRevisionsByCollection = async (req, res) => {
 
 /**
  * Permet de créer une révision.
- * Pour cela, envoie une requête POST avec dans le body un frontText et backText, un collectionId
- * et optionnellement avec un frontURL et backURL.
- * Pour ajouter une flashcard dans une collection, il faut que l'utilisateur soit le créateur de la collection.
+ * Pour ajouter une révision, il faut que la flashcard soit publique ou que la personne soit le créateur de la flashcard.
+ * 
  * @param {request} req 
  * @param {response} res 
  * @returns {void}
@@ -61,11 +60,10 @@ export const getRevisionsByCollection = async (req, res) => {
 export const createOrUpdateRevision = async (req, res) => {
     //Nombre de jours à ajouter en fonction du level
     const days = {1: 1, 2: 2, 3: 4, 4: 8, 5: 16};
+    console.log(req.user.userId);
 
     const { flashcardId } = req.params;
     const { level } = req.query;
-
-    const now = new Date();
 
     try {
         const [flashcard] = (await 
@@ -85,37 +83,42 @@ export const createOrUpdateRevision = async (req, res) => {
         }
 
         const [revision] = await db.select().from(revisionsTable)
-            .where(eq(revisionsTable.flashcardId, flashcardId), eq(revisionsTable.userId, req.user.userId));
+            .where(and(eq(revisionsTable.flashcardId, flashcardId), eq(revisionsTable.userId, req.user.userId)));
 
+        console.log(revision);
         // Si la révision n'existe pas, on la crée
         if(!revision) {
+            const now = new Date();
+            const next = new Date(now);
+            next.setDate(next.getDate() + days[level ? level : 1]);
             await db.insert(revisionsTable).values({
                 // Si il n'y a pas de level, on met 1
                 level: level ? level : 1,
                 lastRevision: now,  
                 // On ajoute le nombre de jours en fonction du level
-                nextRevision: now.setDate(now.getDate() + days[level ? level : 1]),
+                nextRevision: next,
                 flashcardId: flashcardId,
                 userId: req.user.userId
             });
-            return res.status(201).json({ message: 'Revision created' });   
         } else {
+            const now = new Date();
+            const next = new Date(now);
+            next.setDate(next.getDate() + days[level ? level : revision.level]);
             // Sinon on la met à jour
             await db.update(revisionsTable).set({ 
                     //Si il n'y a pas de level, on garde le level actuel
                     level: level ? level : revision.level,
                     lastRevision: now,
                     //On modifie la date de la prochaine révision en fonction du level
-                    nextRevision: now.setDate(now.getDate() + days[level ? level : revision.level]) 
+                    nextRevision: next
                 })
                 .where(eq(revisionsTable.id, revision.id)
             );
-        }        
-
+        }   
+        
         res.status(201).json({
             message: 'Revision created',
             flashcard: flashcard,
-            revision: revision
         });
     } catch (error) {
         console.log(error);
