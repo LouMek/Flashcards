@@ -36,6 +36,11 @@ export const register = async (req, res) => {
             token,
         });
     } catch (error) {
+        if(error.cause.code === 'SQLITE_CONSTRAINT_UNIQUE'){ 
+            return res.status(409).json({
+                error: 'Email already used'
+            });
+        }
         console.log(error);
         res.status(500).json({
             error: 'Register failed'
