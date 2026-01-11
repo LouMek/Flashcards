@@ -212,7 +212,6 @@ export const modifyCollection = async (req, res) => {
 
         const { createdBy } = created;
 
-
         // On vérifie que l'utilisateur authentifié soit bien le créateur de la collection spécifiée,
         // sinon on renvoie une erreur
         if(createdBy != req.user.userId) {

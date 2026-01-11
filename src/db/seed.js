@@ -2,7 +2,6 @@ import { usersTable, collectionsTable, flashcardsTable, revisionsTable } from '.
 import { hashSync } from 'bcrypt';
 import { db } from './database.js';
 
-
 async function seed() {
     try {
         console.log('Seeding database...');
@@ -11,7 +10,6 @@ async function seed() {
         await db.delete(collectionsTable);
         await db.delete(flashcardsTable);
         await db.delete(revisionsTable);    
-
 
         const seedUsers = [
             {
@@ -53,7 +51,7 @@ async function seed() {
                 isPublic: true,
                 createdBy: createdUsers[0].id
             }
-        ]
+        ];
 
         const createdCollections = await db.insert(collectionsTable).values(seedCollections).returning();
 
@@ -84,17 +82,14 @@ async function seed() {
                 backURL:  'Ceci est un backText4',
                 collectionId: createdCollections[0].id
             },
-        ]
+        ];
 
         const createdFlashcards = await db.insert(flashcardsTable).values(seedFlashcards).returning();
 
-
         console.log('Database seeded successfully.');
-
     } catch (error) {
         console.error('Error seeding database:', error);
     }
 }
-
 
 seed();

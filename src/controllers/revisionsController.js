@@ -3,7 +3,6 @@ import { flashcardsTable, collectionsTable } from '../db/schema.js';
 import { eq } from 'drizzle-orm';
 import { revisionsTable } from '../db/schema.js';
 
-
 /**
  * Permet de récupérer toutes les flashcards d'une collection qu'il faut réviser.
  * Pour cela, envoie une requête GET avec un paramètre collectionId.
@@ -21,14 +20,13 @@ export const getRevisionsByCollection = async (req, res) => {
         const [collection] = (await
             db.select().from(collectionsTable)
             .where(eq(collectionsTable.id, collectionId))
-        )
+        );
 
         const flashcards = (await 
             db.select().from(flashcardsTable)
             .where(eq(flashcardsTable.collectionId, collection.id))
             .orderBy('createdAt', 'desc')
         );
-
 
         if (!collection) {
             return res.status(404).json({ error: 'Collection not found' });
@@ -38,16 +36,13 @@ export const getRevisionsByCollection = async (req, res) => {
             return  res.status(403).json({ error: 'Invalid permission: this collection is private' });
         }
 
-        res.status(200).json(flashcards) 
+        res.status(200).json(flashcards);
     } catch (error) {
         res.status(500).json({
             error: 'Failed to fetch flashcards'
         });
     }
 }
-
-
-
 
 /**
  * Permet de créer une révision.
@@ -68,7 +63,6 @@ export const createOrUpdateRevision = async (req, res) => {
     const now = new Date();
 
     try {
-
         const [flashcard] = (await 
             db.select().from(flashcardsTable)
             .innerJoin(collectionsTable, eq(flashcardsTable.collectionId, collectionsTable.id))

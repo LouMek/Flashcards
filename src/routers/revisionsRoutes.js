@@ -6,7 +6,6 @@ import { collectionIdSchema } from '../models/collection.js';
 import { flashcardIdSchema } from '../models/flashcard.js';
 import { createOrUpdateRevisionSchema } from '../models/revision.js';
 
-
 const router = Router();
 
 router.use(authenticateToken);
@@ -18,6 +17,5 @@ router.use(authenticateToken);
 router.get('/:collectionId', validateParams(collectionIdSchema), getRevisionsByCollection); 
 router.post('/:flashcardId', validateParams(flashcardIdSchema), validateQuery(createOrUpdateRevisionSchema), createOrUpdateRevision); //mettre à jour ou créé la révision d'une flashcard
 // localhost:3000/revisions/:flashcardId?level=1
-
 
 export default router;
